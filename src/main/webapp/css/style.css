@@ -1,0 +1,49 @@
+html, body{
+	font-size: 14px;
+	margin-left:0px; margin-right:15px; 
+	padding:0px;
+	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+	color: #333333
+}
+
+table {   
+	border-collapse:collapse;    
+	border-top: 1px solid #ddd;
+	font-family: Tahoma,Verdana,Segoe,sans-serif;
+	width:100%;
+}
+ 
+th {
+	width: 290;
+	color: #000000;
+	text-align: left;	
+}
+
+tr {
+	line-height: 32px;
+	padding:8px;
+	border-top: 1px solid #ddd;	
+}
+ 
+tr:nth-child(even) {background: #FFFFFF}
+tr:nth-child(odd) {background: #DDDDDD50}	
+
+.add-student-button {
+	border: 1px solid #666; 
+	border-radius: 5px; 
+	padding: 4px; 
+	font-size: 12px;
+	font-weight: bold;
+	width: 120px; 
+	padding: 5px 10px; 
+	
+	margin-bottom: 15px;
+	background: #cccccc;
+}
+
+h2, .h2 {
+    font-size: 30px;
+    font-family: inherit;
+    font-weight: 500;
+    color: inherit;
+}

@@ -1,0 +1,45 @@
+<web-app xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee
+         http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"
+         version="3.1">
+         
+    <welcome-file-list>
+		<welcome-file>projectControllerServlet</welcome-file>
+	</welcome-file-list>
+  <display-name>Archetype Created Web Application</display-name>
+  
+	<servlet>
+	  	<servlet-name>EmployeeControllerServlet</servlet-name>
+	  	<servlet-class>servlets.EmployeeControllerServlet</servlet-class>
+	</servlet>
+	<servlet>
+	  	<servlet-name>ProblemControllerServlet</servlet-name>
+	  	<servlet-class>servlets.ProblemControllerServlet</servlet-class>
+	</servlet>
+	<servlet>
+	  	<servlet-name>ProjectControllerServlet</servlet-name>
+	  	<servlet-class>servlets.ProjectControllerServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+	  	<servlet-name>EmployeeControllerServlet</servlet-name>
+	  	<url-pattern>/employeeControllerServlet</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+	  	<servlet-name>ProblemControllerServlet</servlet-name>
+		<url-pattern>/problemControllerServlet</url-pattern>
+  	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>ProjectControllerServlet</servlet-name>
+	  	<url-pattern>/projectControllerServlet</url-pattern>
+	</servlet-mapping>
+	
+  	<servlet>
+	  	<servlet-name>InitializeDbSerlvet</servlet-name>
+	  	<servlet-class>projects.InitializeDbSerlvet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+	  	<servlet-name>InitializeDbSerlvet</servlet-name>
+	  	<url-pattern>/InitializeDbSerlvet</url-pattern>
+	</servlet-mapping>
+</web-app>
