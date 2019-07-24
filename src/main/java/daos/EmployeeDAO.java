@@ -3,15 +3,14 @@ package daos;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
 import classes.Employee;
-import projects.SingletonConnection;
+import jdbcConnections.SingletonConnection;
 
-public class EmployeeDAO {
+public class EmployeeDAO implements DAOInterface {
 	private SingletonConnection conPool;
 	
 	private static String TABLE_NAME = "employees";
@@ -24,8 +23,22 @@ public class EmployeeDAO {
 	public EmployeeDAO() throws Exception {
 		conPool = SingletonConnection.getInstance();
 	}
-	
-	public List<Employee> getEmployees() throws Exception {
+
+	private void close(Statement myStmt, ResultSet myRs) {
+		try {
+			if (myRs != null) {
+				myRs.close();
+			}
+			if (myStmt != null) {
+				myStmt.close();
+			}			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	@Override
+	public List<Employee> getList() throws Exception {
 		List<Employee> employees = new ArrayList<>();
 		
 		Connection con = conPool.myCon.getConnection();
@@ -59,132 +72,9 @@ public class EmployeeDAO {
 			close(myStmt, myRs);
 			conPool.myCon.releaseConnection(con);
 		}
-		
-		
-	}
-
-	private void close(Statement myStmt, ResultSet myRs) {
-		try {
-			
-			if (myRs != null) {
-				myRs.close();
-			}
-			
-			if (myStmt != null) {
-				myStmt.close();
-			}
-			
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
-	public void addEmployee(Employee theEmployee) throws Exception {
-		Connection con = conPool.myCon.getConnection();
-		PreparedStatement myStmt = null;
-		
-		try {
-			String sql = "insert into " + TABLE_NAME
-					+ " (" + EMPLOYEE_ID + ", " + LAST_NAME + ", " + FIRST_NAME + ", " + PATRONYMIC + ", " + POSITION + ") values (?, ?, ?, ?, ?)";
-			
-			myStmt = con.prepareStatement(sql);
-
-			myStmt.setInt(1, theEmployee.getId());
-			myStmt.setString(2, theEmployee.getLastName());
-			myStmt.setString(3, theEmployee.getFirstName());
-			myStmt.setString(4, theEmployee.getPatronymic());
-			myStmt.setString(5, theEmployee.getPosition());
-			
-			myStmt.execute();
-		} finally {
-			close(myStmt, null);
-			conPool.myCon.releaseConnection(con);
-		}
-	}
-
-	public Employee getEmployee(String theEmployeeId) throws Exception {
-
-		Employee theEmployee = null;
-		
-		Connection con = conPool.myCon.getConnection();
-		PreparedStatement myStmt = null;
-		ResultSet myRs = null;
-		int employeeId;
-		
-		try {
-			employeeId = Integer.parseInt(theEmployeeId);
-			
-			String sql = "select * from " + TABLE_NAME + " where " + EMPLOYEE_ID + "=?";
-			
-			myStmt = con.prepareStatement(sql);
-			
-			myStmt.setInt(1, employeeId);
-			
-			myRs = myStmt.executeQuery();
-			
-			if (myRs.next()) {
-				String lastName = myRs.getString(LAST_NAME);
-				String firstName = myRs.getString(FIRST_NAME);
-				String patronymic = myRs.getString(PATRONYMIC);
-				String position = myRs.getString(POSITION);
-				
-				theEmployee = new Employee(employeeId, lastName, firstName, patronymic, position);
-			} else {
-				throw new Exception("Couldn't find an employee with id: " + employeeId);
-			}
-			
-			return theEmployee;
-		} finally {
-			close(myStmt, myRs);
-			conPool.myCon.releaseConnection(con);
-		}
-		
-		
-	}
-
-	public void updateEmployee(int id, String lastName, String firstName, String patronymic, String position) throws SQLException {
-		Connection con = conPool.myCon.getConnection();
-		PreparedStatement myStmt = null;
-		
-		try {
-			String sql = "update " + TABLE_NAME
-					+ " set " + LAST_NAME + "=?, " + FIRST_NAME + "=?, " + PATRONYMIC + "=?, " + POSITION + "=? where " + EMPLOYEE_ID + "=?";
-			
-			myStmt = con.prepareStatement(sql);
-	
-			myStmt.setString(1, lastName);
-			myStmt.setString(2, firstName);
-			myStmt.setString(3, patronymic);
-			myStmt.setString(4, position);
-			myStmt.setInt(5, id);
-			
-			myStmt.execute();
-		} finally {
-			close(myStmt, null);
-			conPool.myCon.releaseConnection(con);
-		}
-	}
-
-	public void deleteEmployee(String theEmployeeId) throws Exception {
-		Connection con = conPool.myCon.getConnection();
-		PreparedStatement myStmt = null;
-		
-		try {
-			String sql = "delete from " + TABLE_NAME + " " 
-					+ "where " + EMPLOYEE_ID + "=?";
-			
-			myStmt = con.prepareStatement(sql);
-	
-			myStmt.setString(1, theEmployeeId);
-			
-			myStmt.execute();
-			
-		} finally {
-			close(myStmt, null);
-			conPool.myCon.releaseConnection(con);
-		}
 	}
 	
+	@Override
 	public String getMaxID() throws Exception {
 		String maxID = null;
 		
@@ -234,4 +124,121 @@ public class EmployeeDAO {
 	public static String getPosition() {
 		return POSITION;
 	}
+
+	@Override
+	public void add(Object obj) throws Exception {
+		Employee theEmployee = (Employee) obj;
+		
+		Connection con = conPool.myCon.getConnection();
+		PreparedStatement myStmt = null;
+		
+		try {
+			String sql = "insert into " + TABLE_NAME
+					+ " (" + EMPLOYEE_ID + ", " + LAST_NAME + ", " + FIRST_NAME + ", " + PATRONYMIC + ", " + POSITION + ") values (?, ?, ?, ?, ?)";
+			
+			myStmt = con.prepareStatement(sql);
+			myStmt.setInt(1, theEmployee.getId());
+			myStmt.setString(2, theEmployee.getLastName());
+			myStmt.setString(3, theEmployee.getFirstName());
+			myStmt.setString(4, theEmployee.getPatronymic());
+			myStmt.setString(5, theEmployee.getPosition());
+			
+			myStmt.execute();
+		} finally {
+			close(myStmt, null);
+			conPool.myCon.releaseConnection(con);			
+		}
+	}	
+
+	@Override
+	public void update(Object obj) throws Exception {
+		Employee theEmployee = (Employee) obj;
+		
+		Connection con = conPool.myCon.getConnection();
+		PreparedStatement myStmt = null;
+		
+		try {
+			String sql = "update " + TABLE_NAME
+					+ " set " + LAST_NAME + "=?, " + FIRST_NAME + "=?, " + PATRONYMIC + "=?, " + POSITION + "=? where " + EMPLOYEE_ID + "=?";
+			
+			myStmt = con.prepareStatement(sql);
+	
+			myStmt.setString(1, theEmployee.getLastName());
+			myStmt.setString(2, theEmployee.getFirstName());
+			myStmt.setString(3, theEmployee.getPatronymic());
+			myStmt.setString(4, theEmployee.getPosition());
+			myStmt.setInt(5, theEmployee.getId());
+			
+			myStmt.execute();
+		} finally {
+			close(myStmt, null);
+			conPool.myCon.releaseConnection(con);
+		}
+	}
+
+	@Override
+	public void delete(String id) throws Exception {
+		Connection con = conPool.myCon.getConnection();
+		PreparedStatement myStmt = null;
+		
+		try {
+			String sql = "delete from " + TABLE_NAME + " " 
+					+ "where " + EMPLOYEE_ID + "=?";
+			
+			myStmt = con.prepareStatement(sql);
+	
+			myStmt.setString(1, id);
+			
+			myStmt.execute();
+			
+		} finally {
+			close(myStmt, null);
+			conPool.myCon.releaseConnection(con);
+		}
+		
+	}
+
+	@Override
+	public Object get(int id) throws Exception{
+		Employee theEmployee = null;
+		
+		Connection con = conPool.myCon.getConnection();
+		PreparedStatement myStmt = null;
+		ResultSet myRs = null;
+		
+		try {
+			String sql = "select * from " + TABLE_NAME + " where " + EMPLOYEE_ID + "=?";
+			
+			myStmt = con.prepareStatement(sql);
+			
+			myStmt.setInt(1, id);
+			
+			myRs = myStmt.executeQuery();
+			
+			if (myRs.next()) {
+				String lastName = myRs.getString(LAST_NAME);
+				String firstName = myRs.getString(FIRST_NAME);
+				String patronymic = myRs.getString(PATRONYMIC);
+				String position = myRs.getString(POSITION);
+				
+				theEmployee = new Employee(id, lastName, firstName, patronymic, position);
+			} else {
+				throw new Exception("Couldn't find an employee with id: " + id);
+			}
+			
+			
+		} finally {
+			close(myStmt, myRs);
+			conPool.myCon.releaseConnection(con);
+		}
+		
+		return theEmployee;
+	}
+
+	@Override
+	public int getIdByAbbr(String abbreviation) throws Exception {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
 }

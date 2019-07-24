@@ -5,33 +5,33 @@
          version="3.1">
          
     <welcome-file-list>
-		<welcome-file>projectControllerServlet</welcome-file>
+		<welcome-file>projectServlet</welcome-file>
 	</welcome-file-list>
   <display-name>Archetype Created Web Application</display-name>
   
 	<servlet>
-	  	<servlet-name>EmployeeControllerServlet</servlet-name>
-	  	<servlet-class>servlets.EmployeeControllerServlet</servlet-class>
+	  	<servlet-name>EmployeeServlet</servlet-name>
+	  	<servlet-class>servlets.EmployeeServlet</servlet-class>
 	</servlet>
 	<servlet>
-	  	<servlet-name>ProblemControllerServlet</servlet-name>
-	  	<servlet-class>servlets.ProblemControllerServlet</servlet-class>
+	  	<servlet-name>ProblemServlet</servlet-name>
+	  	<servlet-class>servlets.ProblemServlet</servlet-class>
 	</servlet>
 	<servlet>
-	  	<servlet-name>ProjectControllerServlet</servlet-name>
-	  	<servlet-class>servlets.ProjectControllerServlet</servlet-class>
+	  	<servlet-name>ProjectServlet</servlet-name>
+	  	<servlet-class>servlets.ProjectServlet</servlet-class>
 	</servlet>
 	<servlet-mapping>
-	  	<servlet-name>EmployeeControllerServlet</servlet-name>
-	  	<url-pattern>/employeeControllerServlet</url-pattern>
+	  	<servlet-name>EmployeeServlet</servlet-name>
+	  	<url-pattern>/employeeServlet</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
-	  	<servlet-name>ProblemControllerServlet</servlet-name>
-		<url-pattern>/problemControllerServlet</url-pattern>
+	  	<servlet-name>ProblemServlet</servlet-name>
+		<url-pattern>/problemServlet</url-pattern>
   	</servlet-mapping>
 	<servlet-mapping>
-		<servlet-name>ProjectControllerServlet</servlet-name>
-	  	<url-pattern>/projectControllerServlet</url-pattern>
+		<servlet-name>ProjectServlet</servlet-name>
+	  	<url-pattern>/projectServlet</url-pattern>
 	</servlet-mapping>
 	
   	<servlet>

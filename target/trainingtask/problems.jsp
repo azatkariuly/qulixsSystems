@@ -10,9 +10,9 @@
 </head>
 <body>
 	<ul>
-	  <li><a href="projectControllerServlet">Projects</a></li>
-	  <li><a class="active" href="problemControllerServlet">Problems</a></li>
-	  <li><a href="employeeControllerServlet">Employees</a></li>
+	  <li><a href="projectServlet">Projects</a></li>
+	  <li><a class="active" href="problemServlet">Problems</a></li>
+	  <li><a href="employeeServlet">Employees</a></li>
 	</ul>
 
 	<div style="padding:20px;margin-top:30px;;height:1500px;">
@@ -24,7 +24,7 @@
 		 
 		<div class="row">
 			<div class="col-md-6">
-				<form action="problemControllerServlet" method="get">
+				<form action="problemServlet" method="get">
 					<input type="hidden" name="command" value="ADD-PROBLEM-FORM" />
 					<input type="submit" value="Add Problem" class="add-button">
 				</form>
@@ -44,12 +44,12 @@
 					
 					<c:forEach var="tempProblem" items="${requestScope.PROBLEM_LIST}">
 					    
-						<c:url var="editLink" value="problemControllerServlet">
+						<c:url var="editLink" value="problemServlet">
 							<c:param name="command" value="LOAD"/>
 							<c:param name="problemId" value="${tempProblem.id}"/>
 						</c:url>
 					
-						<c:url var="deleteLink" value="problemControllerServlet">
+						<c:url var="deleteLink" value="problemServlet">
 							<c:param name="command" value="DELETE"/>
 							<c:param name="problemId" value="${tempProblem.id}"/>
 							
@@ -57,16 +57,18 @@
 						
 						<tr>
 							<td> ${tempProblem.id} </td>
-							<td> ${tempProblem.projectAbbreviation} </td>
+							<td> ${tempProblem.abbreviation} </td>
 							<td> ${tempProblem.title} </td>
 							<!-- <td> ${tempProblem.workHour} </td> -->
 							<td> ${tempProblem.startDate} </td>
 							<td> ${tempProblem.endDate} </td>
+							
 							<td> 
 								<c:forEach var="tempEmployee" items="${tempProblem.employees}">
 									${tempEmployee.lastName} ${tempEmployee.firstName} ${tempEmployee.patronymic} <br/>
 								</c:forEach>
-							 </td>
+							</td>
+							 
 							<td> ${tempProblem.status} </td>
 							<td> <a href="${editLink}">Edit</a>
 							 |

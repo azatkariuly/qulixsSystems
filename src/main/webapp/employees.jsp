@@ -12,9 +12,9 @@
 <body>
 
 	<ul>
-	  <li><a href="projectControllerServlet">Projects</a></li>
-	  <li><a href="problemControllerServlet">Problems</a></li>
-	  <li><a class="active" href="employeeControllerServlet">Employees</a></li>
+	  <li><a href="projectServlet">Projects</a></li>
+	  <li><a href="problemServlet">Problems</a></li>
+	  <li><a class="active" href="employeeServlet">Employees</a></li>
 	</ul>
 
 	<div style="padding:20px;margin-top:30px;;height:1500px;">
@@ -27,7 +27,7 @@
 		<div class="row">
 			<div class="col-md-6">
 			
-				<form action="employeeControllerServlet" method="get">
+				<form action="employeeServlet" method="get">
 					<input type="hidden" name="command" value="ADD-EMPLOYEE-FORM" />
 					<input type="submit" value="Add Employee" class="add-button">
 				</form>
@@ -44,12 +44,12 @@
 					
 					<c:forEach var="tempEmployee" items="${requestScope.EMPLOYEE_LIST}">
 					  
-						<c:url var="editLink" value="employeeControllerServlet">
+						<c:url var="editLink" value="employeeServlet">
 							<c:param name="command" value="LOAD"/>
 							<c:param name="employeeId" value="${tempEmployee.id}"/>
 						</c:url>
 					
-						<c:url var="deleteLink" value="employeeControllerServlet">
+						<c:url var="deleteLink" value="employeeServlet">
 							<c:param name="command" value="DELETE"/>
 							<c:param name="employeeId" value="${tempEmployee.id}"/>
 							

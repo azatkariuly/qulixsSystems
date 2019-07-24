@@ -14,16 +14,16 @@
 <body>
 
 	<ul>
-	  <li><a class="active" href="projectControllerServlet">Projects</a></li>
-	  <li><a href="problemControllerServlet">Problems</a></li>
-	  <li><a href="employeeControllerServlet">Employees</a></li>
+	  <li><a class="active" href="projectServlet">Projects</a></li>
+	  <li><a href="problemServlet">Problems</a></li>
+	  <li><a href="employeeServlet">Employees</a></li>
 	</ul>
 
 	<div style="padding:20px; margin-top:50px;height:600px;">
 		<div id="container">
 		<h3>Add Project</h3>
 		
-		<form action="projectControllerServlet" method="get">
+		<form action="projectServlet" method="get">
 		
 			<input type="hidden" name="command" value="ADD" />
 			
@@ -49,7 +49,7 @@
 			</table>
 			
 			<br/><br/>
-			<input type="submit" value="Save" class="add-button"> <button onclick="location.href='projectControllerServlet'" type="button" class="add-button">Cancel</button>
+			<input type="submit" value="Save" class="add-button"> <button onclick="location.href='projectServlet'" type="button" class="add-button">Cancel</button>
 			
 		</form>
 		

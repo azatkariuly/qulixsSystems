@@ -10,9 +10,9 @@ import java.util.List;
 
 import classes.Employee;
 import classes.Problem;
-import projects.SingletonConnection;
+import jdbcConnections.SingletonConnection;
 
-public class ProblemDAO {
+public class ProblemDAO implements DAOInterface {
 	
 	private SingletonConnection conPool;
 	
@@ -31,88 +31,6 @@ public class ProblemDAO {
 	
 	public ProblemDAO() throws Exception {
 		conPool = SingletonConnection.getInstance();
-	}
-	
-	public List<Problem> getProblems() throws Exception {
-		List<Problem> problems = new ArrayList<Problem>();
-		
-		Connection con = conPool.myCon.getConnection();
-		
-		Statement myStmt = null;
-		ResultSet myRs = null;
-		
-		Statement myStmt2 = null;
-		ResultSet myRs2 = null;
-		
-		try {
-			String sql = "select * from " + TABLE_NAME + " order by " + PROBLEM_ID + " asc";
-			myStmt = con.createStatement();
-			
-			myRs = myStmt.executeQuery(sql);
-		
-			while (myRs.next()) {
-				
-				int id = myRs.getInt(PROBLEM_ID);
-				String title = myRs.getString(TITLE);
-				String workHour = myRs.getString(WORK_HOUR);
-				String startDate = myRs.getString(START_DATE);
-				String endDate = myRs.getString(END_DATE);
-				String status = myRs.getString(STATUS);
-				
-				int projectId = myRs.getInt(PROJECT_ID);
-				
-				
-				//get project abbreviation for problem
-				String sql2 = "select " + ProjectDAO.getAbbreviation() + " from " + ProjectDAO.getTableName()
-						+ " where  " + ProjectDAO.getProjectId() + "=" + projectId;
-				
-				myStmt2 = con.createStatement();
-				myRs2 = myStmt2.executeQuery(sql2);
-				
-				String projectAbbr = "";
-				
-				while (myRs2.next()) {
-					projectAbbr = myRs2.getString(ProjectDAO.getAbbreviation());
-				}
-
-				close(myStmt2, myRs2);
-				
-				//get problem executors
-				sql2 = "select " + EmployeeDAO.getTableName() + "." + EmployeeDAO.getFirstName() + ", "
-						+ EmployeeDAO.getTableName() + "." + EmployeeDAO.getLastName() + ", "
-						+ EmployeeDAO.getTableName() + "." + EmployeeDAO.getPatronymic() + " "
-						+ "from " + EmployeeDAO.getTableName() + ", " + TABLE_NAME + ", " + EP_TABLE_NAME + " "
-						+ "where " + EmployeeDAO.getTableName() + "." + EmployeeDAO.getEmployeeId() + " = "
-						+ EP_TABLE_NAME + "." + EP_EMPLOYEE_ID + " and " + TABLE_NAME + "." + PROBLEM_ID + " = "
-						+ EP_TABLE_NAME + "." + EP_PROBLEM_ID + " and " + TABLE_NAME + "." + TITLE + "='" + title + "'";
-				
-				myStmt2 = con.createStatement();
-				myRs2 = myStmt2.executeQuery(sql2);
-				
-				List<Employee> employees = new ArrayList<Employee>();
-				
-				while (myRs2.next()) {
-					String firstName = myRs2.getString(EmployeeDAO.getFirstName());
-					String lastName = myRs2.getString(EmployeeDAO.getLastName());
-					String patronymic = myRs2.getString(EmployeeDAO.getPatronymic());
-					
-					employees.add(new Employee(lastName, firstName, patronymic, null));		
-				}
-				
-				
-				Problem tempProblem = new Problem(id, title, workHour, startDate, endDate, status, projectAbbr, employees);
-				problems.add(tempProblem);
-			}
-			
-			return problems;
-		
-		} finally {
-			close(myStmt, myRs);
-			close(myStmt2, myRs2);
-			conPool.myCon.releaseConnection(con);
-		}
-		
-		
 	}
 	
 	public List<Problem> getFreeProblems() throws Exception {
@@ -167,152 +85,6 @@ public class ProblemDAO {
 			
 		} catch (Exception e) {
 			e.printStackTrace();
-		}
-	}
-
-	public void addProblem(Problem theProblem) throws Exception {
-		Connection con = conPool.myCon.getConnection();
-		
-		PreparedStatement myStmt = null;
-		
-		try {	
-			String sql = "insert into " + TABLE_NAME + " "
-					+ "(" + PROBLEM_ID +", " + TITLE + ", " + WORK_HOUR + ", " + START_DATE + ", " + END_DATE + ", " + STATUS + ") "
-					+ "values (?, ?, ?, ?, ?, ?)";
-			
-			myStmt = con.prepareStatement(sql);
-
-			myStmt.setInt(1, theProblem.getId());
-			myStmt.setString(2, theProblem.getTitle());
-			myStmt.setString(3, theProblem.getWorkHour());
-			myStmt.setString(4, theProblem.getStartDate());
-			myStmt.setString(5, theProblem.getEndDate());
-			myStmt.setString(6, theProblem.getStatus());
-			
-			myStmt.execute();
-		} finally {
-			close(myStmt, null);
-			conPool.myCon.releaseConnection(con);
-		}
-	}
-	
-	public void addProblemWithAbbr(Problem theProblem) throws Exception {
-		Connection con = conPool.myCon.getConnection();
-		PreparedStatement myStmt = null;
-		
-		try {	
-			String sql = "insert into " + TABLE_NAME + " "
-					+ "(" + PROBLEM_ID +", " + TITLE + ", " + WORK_HOUR + ", " + START_DATE + ", " + END_DATE + ", " + STATUS + ", " + PROJECT_ID + ") "
-					+ "values (?, ?, ?, ?, ?, ?, ?)";
-			
-			myStmt = con.prepareStatement(sql);
-
-			myStmt.setInt(1, theProblem.getId());
-			myStmt.setString(2, theProblem.getTitle());
-			myStmt.setString(3, theProblem.getWorkHour());
-			myStmt.setString(4, theProblem.getStartDate());
-			myStmt.setString(5, theProblem.getEndDate());
-			myStmt.setString(6, theProblem.getStatus());
-			
-			String tempID;
-			
-			tempID = new ProjectDAO().getIdByAbbr(theProblem.getProjectAbbreviation());
-			myStmt.setString(7, tempID);
-			
-			myStmt.execute();
-		} finally {
-			close(myStmt, null);
-			conPool.myCon.releaseConnection(con);
-		}
-	}
-
-	public Problem getProblem(String theProblemId) throws Exception {
-
-		Problem theProblem = null;
-		
-		Connection con = conPool.myCon.getConnection();
-		PreparedStatement myStmt = null;
-		ResultSet myRs = null;
-		int problemId;
-		
-		try {
-			
-			problemId = Integer.parseInt(theProblemId);
-			
-			String sql = "select * from " + TABLE_NAME + " where " + PROBLEM_ID + "=?";
-			
-			myStmt = con.prepareStatement(sql);
-			
-			myStmt.setInt(1, problemId);
-			
-			myRs = myStmt.executeQuery();
-			
-			if (myRs.next()) {
-				String title = myRs.getString(TITLE);
-				String workHour = myRs.getString(WORK_HOUR);
-				String startDate = myRs.getString(START_DATE);
-				String endDate = myRs.getString(END_DATE);
-				String status = myRs.getString(STATUS);
-				
-				theProblem = new Problem(problemId, title, workHour, startDate, endDate, status);
-			} else {
-				throw new Exception("Couldn't find a problem with id: " + problemId);
-			}
-			
-			return theProblem;
-		} finally {
-			close(myStmt, myRs);
-			conPool.myCon.releaseConnection(con);
-		}
-		
-		
-	}
-
-	public void updateProblem(int id, String title, String workHour, String startDate, String endDate, String status) throws SQLException {
-		Connection con = conPool.myCon.getConnection();
-		PreparedStatement myStmt = null;
-		
-		try {
-			
-			String sql = "update " + TABLE_NAME + " " 
-					+ "set " + TITLE + "=?, " + WORK_HOUR + "=?, " + START_DATE + "=?, " + END_DATE + "=?, " + STATUS + "=? "
-					+ "where " + PROBLEM_ID + "=?";
-			
-			myStmt = con.prepareStatement(sql);
-	
-			myStmt.setString(1, title);
-			myStmt.setString(2, workHour);
-			myStmt.setString(3, startDate);
-			myStmt.setString(4, endDate);
-			myStmt.setString(5, status);
-			myStmt.setInt(6, id);
-			
-			System.out.println(myStmt);
-			
-			myStmt.execute();
-		} finally {
-			close(myStmt, null);
-			conPool.myCon.releaseConnection(con);
-		}
-	}
-
-	public void deleteProblem(String theProblemId) throws Exception {
-		Connection con = conPool.myCon.getConnection();
-		PreparedStatement myStmt = null;
-		
-		try {
-			String sql = "delete from " + TABLE_NAME + " " 
-					+ "where " + PROBLEM_ID + "=?";
-			
-			myStmt = con.prepareStatement(sql);
-	
-			myStmt.setString(1, theProblemId);
-			
-			myStmt.execute();
-			
-		} finally {
-			close(myStmt, null);
-			conPool.myCon.releaseConnection(con);
 		}
 	}
 
@@ -431,7 +203,7 @@ public class ProblemDAO {
 		}
 	}
 
-	public List<Employee> getProblemEmployees(String theProblemId) throws SQLException {
+	public List<Employee> getProblemEmployees(int theProblemId) throws SQLException {
 
 		List<Employee> employees = new ArrayList<Employee>();
 		
@@ -473,7 +245,7 @@ public class ProblemDAO {
 		
 	}
 
-	public List<Employee> getFreeProblemEmployees(String theProblemId) throws SQLException {
+	public List<Employee> getFreeProblemEmployees(int theProblemId) throws SQLException {
 		List<Employee> employees = new ArrayList<Employee>();
 		
 		Connection con = conPool.myCon.getConnection();
@@ -574,5 +346,212 @@ public class ProblemDAO {
 			close(myStmt, myRs);
 			conPool.myCon.releaseConnection(con);
 		}
+	}
+
+	@Override
+	public List<Problem> getList() throws Exception {
+		List<Problem> problems = new ArrayList<Problem>();
+		
+		Connection con = conPool.myCon.getConnection();
+		
+		Statement myStmt = null;
+		ResultSet myRs = null;
+		
+		Statement myStmt2 = null;
+		ResultSet myRs2 = null;
+		
+		try {
+			String sql = "select * from " + TABLE_NAME + " order by " + PROBLEM_ID + " asc";
+			myStmt = con.createStatement();
+			
+			myRs = myStmt.executeQuery(sql);
+		
+			while (myRs.next()) {
+				
+				int id = myRs.getInt(PROBLEM_ID);
+				String title = myRs.getString(TITLE);
+				String workHour = myRs.getString(WORK_HOUR);
+				String startDate = myRs.getString(START_DATE);
+				String endDate = myRs.getString(END_DATE);
+				String status = myRs.getString(STATUS);
+				
+				int projectId = myRs.getInt(PROJECT_ID);
+				
+				//get project abbreviation for problem
+			    String sql2 = "select " + ProjectDAO.getAbbreviation() + " from " + ProjectDAO.getTableName()
+			      + " where  " + ProjectDAO.getProjectId() + "=" + projectId;
+			    
+			    myStmt2 = con.createStatement();
+			    myRs2 = myStmt2.executeQuery(sql2);
+			    
+			    String abbreviation = "";
+			    
+			    while (myRs2.next()) {
+			    	abbreviation = myRs2.getString(ProjectDAO.getAbbreviation());
+			    }
+
+			    close(myStmt2, myRs2);
+				
+				//get problem executors
+			    sql2 = "select " + EmployeeDAO.getTableName() + "." + EmployeeDAO.getFirstName() + ", "
+			      + EmployeeDAO.getTableName() + "." + EmployeeDAO.getLastName() + ", "
+			      + EmployeeDAO.getTableName() + "." + EmployeeDAO.getPatronymic() + " "
+			      + "from " + EmployeeDAO.getTableName() + ", " + TABLE_NAME + ", " + EP_TABLE_NAME + " "
+			      + "where " + EmployeeDAO.getTableName() + "." + EmployeeDAO.getEmployeeId() + " = "
+			      + EP_TABLE_NAME + "." + EP_EMPLOYEE_ID + " and " + TABLE_NAME + "." + PROBLEM_ID + " = "
+			      + EP_TABLE_NAME + "." + EP_PROBLEM_ID + " and " + TABLE_NAME + "." + TITLE + "='" + title + "'";
+			    
+			    myStmt2 = con.createStatement();
+			    myRs2 = myStmt2.executeQuery(sql2);
+			    
+			    List<Employee> employees = new ArrayList<Employee>();
+			    
+			    while (myRs2.next()) {
+			     String firstName = myRs2.getString(EmployeeDAO.getFirstName());
+			     String lastName = myRs2.getString(EmployeeDAO.getLastName());
+			     String patronymic = myRs2.getString(EmployeeDAO.getPatronymic());
+			     
+			     employees.add(new Employee(lastName, firstName, patronymic, null));  
+			    }
+				
+				
+				Problem tempProblem = new Problem(id, title, workHour, startDate, endDate, status, projectId, abbreviation, employees);
+				problems.add(tempProblem);
+			}
+			
+			return problems;
+		
+		} finally {
+			close(myStmt, myRs);
+			conPool.myCon.releaseConnection(con);
+		}
+	}	
+
+	@Override
+	public void add(Object obj) throws Exception {
+		Problem theProblem = (Problem) obj;
+		
+		Connection con = conPool.myCon.getConnection();
+		PreparedStatement myStmt = null;
+		
+		try {	
+			String sql = "insert into " + TABLE_NAME + " "
+					+ "(" + PROBLEM_ID +", " + TITLE + ", " + WORK_HOUR + ", " + START_DATE + ", " + END_DATE + ", " + STATUS + ", " + PROJECT_ID + ") "
+					+ "values (?, ?, ?, ?, ?, ?, ?)";
+			
+			myStmt = con.prepareStatement(sql);
+
+			myStmt.setInt(1, theProblem.getId());
+			myStmt.setString(2, theProblem.getTitle());
+			myStmt.setString(3, theProblem.getWorkHour());
+			myStmt.setString(4, theProblem.getStartDate());
+			myStmt.setString(5, theProblem.getEndDate());
+			myStmt.setString(6, theProblem.getStatus());
+			
+			if(theProblem.getProjectId() != 0) {
+				myStmt.setInt(7, theProblem.getProjectId());
+			} else {
+				myStmt.setString(7, null);
+			}
+			
+			myStmt.execute();
+		} finally {
+			close(myStmt, null);
+			conPool.myCon.releaseConnection(con);
+		}
+	}	
+	
+	@Override
+	public void update(Object obj) throws Exception {
+		Problem theProblem = (Problem) obj;
+		
+		Connection con = conPool.myCon.getConnection();
+		PreparedStatement myStmt = null;
+		
+		try {
+			
+			String sql = "update " + TABLE_NAME + " " 
+					+ "set " + TITLE + "=?, " + WORK_HOUR + "=?, " + START_DATE + "=?, " + END_DATE + "=?, " + STATUS + "=? "
+					+ "where " + PROBLEM_ID + "=?";
+			
+			myStmt = con.prepareStatement(sql);
+	
+			myStmt.setString(1, theProblem.getTitle());
+			myStmt.setString(2, theProblem.getWorkHour());
+			myStmt.setString(3, theProblem.getStartDate());
+			myStmt.setString(4, theProblem.getEndDate());
+			myStmt.setString(5, theProblem.getStatus());
+			myStmt.setInt(6, theProblem.getId());
+			
+			System.out.println(myStmt);
+			
+			myStmt.execute();
+		} finally {
+			close(myStmt, null);
+			conPool.myCon.releaseConnection(con);
+		}
+	}
+	
+	@Override
+	public void delete(String id) throws Exception {
+		Connection con = conPool.myCon.getConnection();
+		PreparedStatement myStmt = null;
+		
+		try {
+			String sql = "delete from " + TABLE_NAME + " " 
+					+ "where " + PROBLEM_ID + "=?";
+			
+			myStmt = con.prepareStatement(sql);
+	
+			myStmt.setString(1, id);
+			
+			myStmt.execute();
+			
+		} finally {
+			close(myStmt, null);
+			conPool.myCon.releaseConnection(con);
+		}
+	}
+	
+	@Override
+	public Object get(int id) throws Exception {
+		Problem theProblem = null;
+		
+		Connection con = conPool.myCon.getConnection();
+		PreparedStatement myStmt = null;
+		ResultSet myRs = null;
+		
+		try {
+			String sql = "select * from " + TABLE_NAME + " where " + PROBLEM_ID + "=?";
+			
+			myStmt = con.prepareStatement(sql);
+			
+			myStmt.setInt(1, id);
+			
+			myRs = myStmt.executeQuery();
+			
+			if (myRs.next()) {
+				String title = myRs.getString(TITLE);
+				String workHour = myRs.getString(WORK_HOUR);
+				String startDate = myRs.getString(START_DATE);
+				String endDate = myRs.getString(END_DATE);
+				String status = myRs.getString(STATUS);
+				int projectId = myRs.getInt(PROJECT_ID);
+				
+				theProblem = new Problem(id, title, workHour, startDate, endDate, status, projectId, null, null);
+			} else {
+				throw new Exception("Couldn't find a problem with id: " + id);
+			}
+			
+			return theProblem;
+		} finally {
+			close(myStmt, myRs);
+			conPool.myCon.releaseConnection(con);
+		}
+	}	
+	
+	@Override
+	public int getIdByAbbr(String abbreviation) throws Exception {
+		return 0;
 	}
 }

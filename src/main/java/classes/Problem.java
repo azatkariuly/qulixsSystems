@@ -2,8 +2,6 @@ package classes;
 
 import java.util.List;
 
-import classes.Employee;
-
 public class Problem {
 	
 	private int id;
@@ -12,9 +10,12 @@ public class Problem {
 	private String startDate;
 	private String endDate;
 	private String status;
-	private String projectAbbreviation;
+	private int projectId;
 	
+	private String abbreviation;
 	private List<Employee> employees;
+	
+	
 	
 	public Problem(String title, String workHour, String startDate, String endDate, String status) {
 		this.title = title;
@@ -32,34 +33,27 @@ public class Problem {
 		this.endDate = endDate;
 		this.status = status;
 	}
-
-	public Problem(String title, String workHour, String startDate, String endDate, String status, String projectAbbr) {
-		this.title = title;
-		this.workHour = workHour;
-		this.startDate = startDate;
-		this.endDate = endDate;
-		this.status = status;
-		this.projectAbbreviation = projectAbbr;
-	}
 	
-	public Problem(int id, String title, String workHour, String startDate, String endDate, String status, String projectAbbr) {
+	public Problem(int id, String title, String workHour, String startDate, String endDate, String status, int projectId) {
 		this.id = id;
 		this.title = title;
 		this.workHour = workHour;
 		this.startDate = startDate;
 		this.endDate = endDate;
 		this.status = status;
-		this.projectAbbreviation = projectAbbr;
+		this.projectId = projectId;
 	}
 	
-	public Problem(int id, String title, String workHour, String startDate, String endDate, String status, String projectAbbr, List<Employee> employees) {
+	public Problem(int id, String title, String workHour, String startDate, String endDate, String status, int projectId, String abbreviation, 
+			List<Employee> employees) {
 		this.id = id;
 		this.title = title;
 		this.workHour = workHour;
 		this.startDate = startDate;
 		this.endDate = endDate;
 		this.status = status;
-		this.projectAbbreviation = projectAbbr;
+		this.projectId = projectId;
+		this.setAbbreviation(abbreviation);
 		this.employees = employees;
 	}
 
@@ -106,13 +100,13 @@ public class Problem {
 	public int getId() {
 		return id;
 	}
-
-	public String getProjectAbbreviation() {
-		return projectAbbreviation;
+	
+	public int getProjectId() {
+		return projectId;
 	}
 
-	public void setProjectAbbreviation(String projectAbbreviation) {
-		this.projectAbbreviation = projectAbbreviation;
+	public void setProjectId(int projectId) {
+		this.projectId = projectId;
 	}
 
 	public List<Employee> getEmployees() {
@@ -121,6 +115,14 @@ public class Problem {
 
 	public void setEmployees(List<Employee> employees) {
 		this.employees = employees;
+	}
+
+	public String getAbbreviation() {
+		return abbreviation;
+	}
+
+	public void setAbbreviation(String abbreviation) {
+		this.abbreviation = abbreviation;
 	}
 
 }

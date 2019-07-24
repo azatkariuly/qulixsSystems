@@ -14,16 +14,16 @@
 <body>
 
 	<ul>
-	  <li><a href="projectControllerServlet">Projects</a></li>
-	  <li><a class="active" href="problemControllerServlet">Problems</a></li>
-	  <li><a href="employeeControllerServlet">Employees</a></li>
+	  <li><a href="projectServlet">Projects</a></li>
+	  <li><a class="active" href="problemServlet">Problems</a></li>
+	  <li><a href="employeeServlet">Employees</a></li>
 	</ul>
  
 	<div style="padding:20px; margin-top:50px;height:600px;">
 		<div id="container">
 		<h3>Update Problem</h3>
 		
-		<form action="problemControllerServlet" method="get">
+		<form action="problemServlet" method="get">
 		
 			<input type="hidden" name="command" value="UPDATE" />
 			<input type="hidden" name="problemId" value="${THE_ID}" />
@@ -89,7 +89,7 @@
 							
 							<c:forEach var="tempEmployee" items="${THE_PROBLEM_EMPLOYEES}">
 							    
-							    <c:url var="removeLink" value="problemControllerServlet">
+							    <c:url var="removeLink" value="problemServlet">
 									<c:param name="command" value="REMOVEEMPLOYEE"/>
 									<c:param name="employeeId" value="${tempEmployee.id}"/>
 									<c:param name="problemId" value="${THE_ID}"/>
@@ -116,7 +116,7 @@
 			</table>
 			
 			<br/><br/>
-			<input type="submit" value="Save" class="add-button"> <button onclick="location.href='problemControllerServlet'" type="button" class="add-button">Cancel</button>
+			<input type="submit" value="Save" class="add-button"> <button onclick="location.href='problemServlet'" type="button" class="add-button">Cancel</button>
 		</form>
 		
 	</div>
@@ -141,7 +141,7 @@
 							
 							<c:forEach var="tempFreeEmployee" items="${THE_FREE_PROBLEM_EMPLOYEES}">
 							    
-							    <c:url var="addLink" value="problemControllerServlet">
+							    <c:url var="addLink" value="problemServlet">
 									<c:param name="command" value="ADDEMPLOYEE"/>
 									<c:param name="employeeId" value="${tempFreeEmployee.id}"/>
 									<c:param name="problemId" value="${THE_ID}"/>

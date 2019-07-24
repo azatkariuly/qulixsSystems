@@ -10,9 +10,9 @@
 
 <body>
 	 <ul>
-	  <li><a class="active" href="projectControllerServlet">Projects</a></li>
-	  <li><a href="problemControllerServlet">Problems</a></li>
-	  <li><a href="employeeControllerServlet">Employees</a></li>
+	  <li><a class="active" href="projectServlet">Projects</a></li>
+	  <li><a href="problemServlet">Problems</a></li>
+	  <li><a href="employeeServlet">Employees</a></li>
 	</ul>
 
 	<div style="padding:20px;margin-top:30px;;height:1500px;">
@@ -26,7 +26,7 @@
 		<div class="row">
 			<div class="col-md-6">
 				
-				<form action="projectControllerServlet" method="get">
+				<form action="projectServlet" method="get">
 					<input type="hidden" name="command" value="ADD-PROJECT-FORM" />
 					<input type="submit" value="Add Project" class="add-button">
 				</form>
@@ -43,11 +43,11 @@
 					
 					<c:forEach var="tempProject" items="${PROJECT_LIST}">
 					
-						<c:url var="editLink" value="projectControllerServlet">
+						<c:url var="editLink" value="projectServlet">
 							<c:param name="command" value="LOAD"/>
 							<c:param name="projectId" value="${tempProject.id}"/>
 						</c:url>
-						<c:url var="deleteLink" value="projectControllerServlet">
+						<c:url var="deleteLink" value="projectServlet">
 							<c:param name="command" value="DELETE"/>
 							<c:param name="projectId" value="${tempProject.id}"/>	
 						</c:url>
