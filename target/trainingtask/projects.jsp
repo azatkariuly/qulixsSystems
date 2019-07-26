@@ -69,11 +69,8 @@
 		
 				</table>
 			
-			
-			
 			</div>
-		
-			${CHECK_STRING}
+	
 		</div>
 	</div>
 	
