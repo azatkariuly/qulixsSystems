@@ -55,17 +55,7 @@
 				<configuration>
 				<path>/</path>
 				</configuration>
-			</plugin>
-			<plugin>
-		      <groupId>org.mortbay.jetty</groupId>
-		      <artifactId>jetty-maven-plugin</artifactId>
-		      <configuration>
-		        <scanIntervalSeconds>10</scanIntervalSeconds>
-		        <webApp>
-		          <contextPath>/shinchan</contextPath>
-		        </webApp>
-		      </configuration>
-		    </plugin>
+			</plugin> 
     	</plugins>
   	</build>
   
